@@ -1,0 +1,19 @@
+GET_FILENAME_COMPONENT(parent_dir ${CMAKE_CURRENT_SOURCE_DIR} NAME)
+
+# Collect the source
+FILE(GLOB FILES "*.cu")
+
+FOREACH(FILE ${FILES})
+    GET_FILENAME_COMPONENT(FUNC ${FILE} NAME_WE)
+    GET_FILENAME_COMPONENT(FULL_DIR_NAME ${FILE} PATH)
+    GET_FILENAME_COMPONENT(DIR_NAME ${FULL_DIR_NAME} NAME)
+
+    ADD_EXECUTABLE(thrust_${FUNC} ${FILE})
+
+    SET_TARGET_PROPERTIES(thrust_${FUNC}
+                          PROPERTIES
+                          OUTPUT_NAME ${FUNC}_cuda)
+    SET_TARGET_PROPERTIES(thrust_${FUNC}
+                          PROPERTIES
+                          RUNTIME_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/bin/${parent_dir})
+ENDFOREACH()
