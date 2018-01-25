@@ -4,9 +4,9 @@
 #include <cstdio>
 #include <stdexcept>
 
-#if __cplusplus <= 199711L
-    #error "C++11 support is required"
-#endif
+//#if __cplusplus <= 199711L
+//    #error "C++11 support is required"
+//#endif
 
 #include <chrono>
 
