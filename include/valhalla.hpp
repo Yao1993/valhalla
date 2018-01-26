@@ -14,6 +14,8 @@ namespace vll
 {
     using std::chrono::system_clock;
 
+	using d_microseconds = std::chrono::duration<double, std::micro>;
+
     template<typename T> void run(const int num);
     template<typename T> void generate(const int iter);
 
@@ -30,14 +32,14 @@ namespace vll
             system_clock::time_point begin = system_clock::now();
             run<T>(bench_iter);
             system_clock::time_point now = system_clock::now();
-            auto u_sec = std::chrono::duration_cast<std::chrono::microseconds>(now - begin).count() / bench_iter;
+            auto u_sec = std::chrono::duration_cast<d_microseconds>(now - begin).count() / bench_iter;
 
             int repeat = 1;
             while (u_sec < 10000 && repeat < 10 ) {
                 begin = system_clock::now();
                 run<T>(bench_iter);
                 now = system_clock::now();
-                u_sec += std::chrono::duration_cast<std::chrono::microseconds>(now - begin).count() / bench_iter;
+                u_sec += std::chrono::duration_cast<d_microseconds>(now - begin).count() / bench_iter;
                 repeat++;
             }
 

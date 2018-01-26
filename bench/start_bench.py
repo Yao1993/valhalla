@@ -81,7 +81,7 @@ def dump_result(records, hdf_filename, key):
         arg_content = parse_args(record.args)
         time = []
         for line in record.output.splitlines()[1:]:
-            time.append(int(line.split()[1].strip()))
+            time.append(float(line.split()[1].strip()))
         bench_df.loc[i] = pd.Series({'library': record.library, 'executable': arg_content.executable,
                                      'value_type': arg_content.value_type, 'sequence': arg_content.sequence,
                                      'time': time, 'system': get_system_backend(arg_content.executable)[0],
