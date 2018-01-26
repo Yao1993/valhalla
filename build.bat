@@ -1,3 +1,4 @@
+mkdir build
 cd build
 del * /s /q
 FOR /D %%p IN ("./*.*") DO rmdir "%%p" /s /q
