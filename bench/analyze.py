@@ -2,6 +2,8 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 
+from config import bench_config
+
 
 def get_label(library, system, backend):
     if system in library:
@@ -12,29 +14,39 @@ def get_label(library, system, backend):
     return label
 
 
-def calc_bandwidth(x):
-    if x['value_type'] == 'float32':
-        n_bytes = 4
-    elif x['value_type'] == 'float64':
-        n_bytes = 8
-    else:
-        n_bytes = None
-    return [n_bytes * n / t / (1000000000/1000000) for n, t in zip(x['sequence'], x['time'])]
+def load_hdf(hdf_filename, key):
+    return pd.HDFStore(hdf_filename).select(key)
 
 
-if __name__ == '__main__':
-    bench_df = pd.HDFStore('test.hdf').select('test')
-    bench_df['bandwidth'] = pd.Series({index: calc_bandwidth(row)for index, row in bench_df.iterrows()})
+def calc_bandwidth(data):
+    def f(x):
+        if x['value_type'] == 'float32':
+            n_bytes = 4
+        elif x['value_type'] == 'float64':
+            n_bytes = 8
+        else:
+            n_bytes = None
+        return [n_bytes * n / t / (1000000000 / 1000000) for n, t in zip(x['sequence'], x['time'])]
 
+    data['bandwidth'] = pd.Series({index: f(row) for index, row in data.iterrows()})
+    return data
+
+
+def visualize(target, data):
     plt.figure(dpi=300)
-    for _, row in bench_df.iterrows():
-        print(row['time'])
-        print(row['bandwidth'])
+    for _, row in data.iterrows():
         plt.loglog(row['sequence'], row['bandwidth'],
                    '.-',
                    label=get_label(row['library'], row['system'], row['backend']))
     plt.xlabel('Vector Size (Number of elements)')
     plt.ylabel('Bandwidth (GBPS)')
-    plt.title('Reduce Performance')
+    plt.title('{} performance'.format(target))
     plt.legend()
-    plt.show()
+    plt.savefig("{}.eps".format(target))
+
+
+if __name__ == '__main__':
+    for target in bench_config.targets:
+        bench_df = load_hdf(bench_config.hdf_filename, target)
+        bench_df = calc_bandwidth(bench_df)
+        visualize(target, bench_df)

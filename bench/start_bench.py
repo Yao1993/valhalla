@@ -4,22 +4,24 @@ import pandas as pd
 import numpy as np
 import collections
 
+from config import bench_config
+
 Record = collections.namedtuple('Record', ['library', 'args', 'output'])
 
 
-def start_bench(binary_dir, config, bench_targets, options):
+def start_bench(binary_dir, config, bench_target, options):
+    binary_dir = Path(binary_dir)
     library_dirs = [library_dir for library_dir in binary_dir.iterdir() if library_dir.is_dir()]
     bench_result = []
     for library_dir in library_dirs:
-        for bench_target in bench_targets:
-            target_executables = [executable for executable in (library_dir / config).iterdir()
-                                  if bench_target in executable.name]
-            for target_executable in target_executables:
-                args = [str(target_executable), *options]
-                print(args)
-                bench_result.append(Record(library=library_dir.name,
-                                           args=args,
-                                           output=subprocess.check_output(args, shell=True)))
+        target_executables = [executable for executable in (library_dir / config).iterdir()
+                              if bench_target in executable.name]
+        for target_executable in target_executables:
+            args = [str(target_executable), *options]
+            print(args)
+            bench_result.append(Record(library=library_dir.name,
+                                       args=args,
+                                       output=subprocess.check_output(args, shell=True)))
     return bench_result
 
 
@@ -72,12 +74,7 @@ def get_system_backend(stem):
         return None
 
 
-if __name__ == '__main__':
-    targets = ('reduce',)
-    options = ['f', '1000', '100000000', 'x10']
-    # options = ['f', '1', '100', 'x10']
-
-    records = start_bench(Path('../bin'), 'Release', targets, options)
+def dump_result(records, hdf_filename, key):
     bench_df = pd.DataFrame(index=np.arange(0, len(records)),
                             columns=['library', 'executable', 'value_type', 'sequence', 'time', 'system', 'backend'])
     for i, record in enumerate(records):
@@ -90,9 +87,10 @@ if __name__ == '__main__':
                                      'time': time, 'system': get_system_backend(arg_content.executable)[0],
                                      'backend': get_system_backend(arg_content.executable)[1]})
 
-        bench_df.to_hdf('test.hdf', 'test')
+        bench_df.to_hdf(hdf_filename, key)
 
 
-
-
-
+if __name__ == '__main__':
+    for target in bench_config.targets:
+        records = start_bench(bench_config.bin_dir, bench_config.config, target, bench_config.options)
+        dump_result(records, bench_config.hdf_filename, target)
