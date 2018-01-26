@@ -15,7 +15,8 @@ option(BUILD_TBB "Build the TBB files" ON)
 SET(CMAKE_CXX_STANDARD 11)
 SET(CMAKE_CUDA_STANDARD 11)
 # Compiler Options
-SET(CMAKE_CUDA_FLAGS "-gencode arch=compute_61,code=sm_61                      
+SET(CMAKE_CUDA_FLAGS "-gencode arch=compute_61,code=sm_61
+                      -gencode arch=compute_52,code=sm_52                      
                       ${CMAKE_CUDA_FLAGS}")
 
 INCLUDE_DIRECTORIES("${CMAKE_CURRENT_SOURCE_DIR}/include")
