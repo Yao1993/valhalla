@@ -65,7 +65,7 @@ def parse_args(args):
 def get_system_backend(stem):
     host_backends = ['cpp', 'cpu', 'tbb', 'omp']
     device_backends = ['opencl', 'cuda']
-    backend = stem.split('_')[1]
+    backend = stem.split('_')[-1]
     if backend in host_backends:
         return 'host', backend
     elif backend in device_backends:
