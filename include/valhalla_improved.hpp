@@ -57,23 +57,23 @@ namespace vll
             }
             u_sec /= (i + 1);
             
-            int repeat = 1;
-            while (u_sec < 10000 && repeat < 10 ) {
-                double u_sec_per_repeat(0);
-                for (int i = 0; i < bench_iter; i++)
-                {
-                    reset<T>();
-                    begin = system_clock::now();
-                    run<T>();
-                    now = system_clock::now();
+            // int repeat = 1;
+            // while (u_sec < 10000 && repeat < 10 ) {
+            //     double u_sec_per_repeat(0);
+            //     for (int i = 0; i < bench_iter; i++)
+            //     {
+            //         reset<T>();
+            //         begin = system_clock::now();
+            //         run<T>();
+            //         now = system_clock::now();
 
-                    u_sec_per_repeat += std::chrono::duration_cast<d_microseconds>(now - begin).count();
-                }
-                u_sec += u_sec_per_repeat / bench_iter;
-                repeat++;
-            }
+            //         u_sec_per_repeat += std::chrono::duration_cast<d_microseconds>(now - begin).count();
+            //     }
+            //     u_sec += u_sec_per_repeat / bench_iter;
+            //     repeat++;
+            // }
 
-            std::cout << std::setw(10) << std::left << num << "\t" << u_sec/repeat << std::endl;
+            std::cout << std::setw(10) << std::left << num << "\t" << u_sec << std::endl;
         }
     }
 
