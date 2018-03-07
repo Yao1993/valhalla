@@ -59,7 +59,7 @@ def visualize_time(target, data, output_dir):
                    '.-',
                    label=get_label(row['library'], row['system'], row['backend']))
     plt.xlabel('Vector Size (Number of elements)')
-    plt.ylabel('Time (s)')
+    plt.ylabel('Time (us)')
     plt.title('{} performance'.format(target))
     plt.legend()
     plt.savefig("{}/{}_time.eps".format(output_dir,target))
