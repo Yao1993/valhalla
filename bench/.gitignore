@@ -1,4 +1,5 @@
 .idea
 *.hdf
 *.eps
+figures
 __pycache__
