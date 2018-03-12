@@ -32,6 +32,12 @@ def calc_bandwidth(data):
     data['bandwidth'] = pd.Series({index: f(row) for index, row in data.iterrows()})
     return data
 
+def calc_speed(data):
+    def f(x):
+        return [n / t * 1000000 for n, t in zip(x['sequence'], x['time'])]
+    data['speed'] = pd.Series({index: f(row) for index, row in data.iterrows()})
+    return data
+
 def mk_dir(dirname):
     try:
         os.makedirs(dirname)
@@ -52,6 +58,18 @@ def visualize_bandwidth(target, data, output_dir):
     plt.legend()
     plt.savefig("{}/{}_bandwidth.eps".format(output_dir, target))
 
+def visualize_speed(target, data, output_dir):
+    plt.figure(dpi=300)
+    for _, row in data.iterrows():
+        plt.loglog(row['sequence'], row['speed'],
+                   '.-',
+                   label=get_label(row['library'], row['system'], row['backend']))
+    plt.xlabel('Vector Size (Number of elements)')
+    plt.ylabel('Rate (Number of elements / s)')
+    plt.title('{} performance'.format(target))
+    plt.legend()
+    plt.savefig("{}/{}_speed.eps".format(output_dir, target))
+
 def visualize_time(target, data, output_dir):
     plt.figure(dpi=300)
     for _, row in data.iterrows():
@@ -68,6 +86,8 @@ if __name__ == '__main__':
     for target in bench_config.targets:
         bench_df = load_hdf(bench_config.hdf_filename, target)
         bench_df = calc_bandwidth(bench_df)
+        bench_df = calc_speed(bench_df)
         mk_dir('./figures')
-        visualize_bandwidth(target, bench_df, './figures')
+        # visualize_bandwidth(target, bench_df, './figures')
+        visualize_speed(target, bench_df, './figures')
         visualize_time(target, bench_df, './figures')
